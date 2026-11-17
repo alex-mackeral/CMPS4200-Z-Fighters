@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#17161b" />
+    <title>Collector's Companion (Gemini AI Edition)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Kode+Mono:wght@500&display=swap');
+
+      :root { color: #fff; background: #242328; font-family: 'Inter', sans-serif; font-weight: 400; font-synthesis: none; }
+      * { box-sizing: border-box; }
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: #18171c; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb { background: #494452; border-radius: 4px; border: 1px solid #302d3d; }
+      ::-webkit-scrollbar-thumb:hover { background: #5EA729; }
+
+      html, body { background-color: #302d3d; margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-anchor: none; }
+      button, input, textarea { font: inherit; color: inherit; }
+
+      .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: #242328; position: relative; }
+      header { background: #302d3d; padding-top: env(safe-area-inset-top, 6px); border-bottom: 1px solid #494452; flex-shrink: 0; z-index: 10; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; }
+
+      main { flex: 1; width: 100%; max-width: 620px; margin: 0 auto; padding: 16px 13px 90px; overflow-y: auto; overflow-anchor: none; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: #5EA729 #18171c; }
+      main > section, .tool-page { padding-top: 4px; margin-top: 0; }
+
+      .bottom-nav { position: fixed; bottom: 12px; left: 10px; right: 10px; z-index: 20; display: flex; align-items: center; gap: 5px; overflow-x: auto; padding: 10px 10px calc(10px + env(safe-area-inset-bottom, 0px)); background: #302d3d; white-space: nowrap; border: 1px solid #494452; border-radius: 12px; flex-shrink: 0; box-shadow: 0 8px 24px #0009; }
+      .bottom-nav button { flex: 1; min-height: 38px; padding: 8px 8px; border: 1px solid transparent; border-radius: 7px; background: #17161b; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; transition: color .18s, border-color .18s, background .18s; white-space: nowrap; touch-action: manipulation; }
+      .bottom-nav button:hover { border-color: #5EA729; }
+      .bottom-nav button.active { color: #fff; border-color: #5EA729; background: #5EA729; }
+
+      section { border-bottom: 3px solid #1a191f; padding-bottom: 12px; }
+      h1, h2 { margin: 0; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 20px; line-height: normal; }
+      p { margin: 0; font-size: 20px; line-height: 1.2; }
+
+      .action-row { padding: 24px 0 28px; border-bottom: 3px solid #1a191f; text-align: center; }
+      .primary { border: 1px solid #ffffff20; border-radius: 6px; min-height: 73px; padding: 13px 18px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 20px; line-height: 1.15; color: #fff; box-shadow: 0 4px 4px #0005; cursor: pointer; transition: transform .18s, filter .18s, box-shadow .18s; }
+      .primary:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.16); box-shadow: 0 8px 16px #0006; }
+      .green, .olive { background: #5EA729; }
+      .action-row .primary { width: min(253px, 100%); }
+
+      .tool-page { border: 0; padding-top: 6px; }
+      .tool-page > p { color: #d4d1db; margin-top: 7px; font-size: 17px; line-height: 1.45; }
+      .eyebrow { color: #5EA729 !important; font-family: 'Kode Mono', monospace; font-weight: 500; font-size: 12px !important; letter-spacing: .08em; }
+      .tool-page h1 { margin-top: 5px; font-size: 30px; }
+
+      .upload-box { display: flex; min-height: 260px; margin-top: 26px; border: 2px dashed #625d70; border-radius: 10px; align-items: center; justify-content: center; flex-direction: column; gap: 8px; background: #1d1c22; cursor: pointer; transition: .2s; }
+      .upload-box:hover { border-color: #5EA729; background: #22272a; }
+      .upload-box input { display: none; }
+      .upload-box.has-preview { min-height: 320px; overflow: hidden; }
+      .upload-box img { width: min(220px, 78%); max-height: 230px; border-radius: 5px; object-fit: contain; box-shadow: 0 8px 24px #0009; }
+      .upload-mark { font-size: 42px; color: #5EA729; }
+
+      .scan-actions-container { display: flex; flex-direction: row; gap: 10px; margin-top: 12px; width: 100%; }
+      .scan-action-btn { flex: 1; min-height: 44px; padding: 10px 14px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; border-radius: 6px; cursor: pointer; transition: filter .18s; }
+      .scan-action-btn:hover { filter: brightness(1.1); }
+      .btn-rescan { background-color: #5EA729; color: #ffffff; border: none; }
+      .btn-upload-new { background-color: #17161B; color: #ffffff; border: 2px solid #5EA729; }
+
+      .scan-processing { margin-top: 18px; }
+      .processing-label { display: flex; justify-content: space-between; margin-bottom: 8px; color: #d4d1db; font-size: 13px; }
+      .progress-track { height: 9px; overflow: hidden; border-radius: 99px; background: #17161b; box-shadow: inset 0 1px 3px #0008; }
+      .progress-fill { height: 100%; border-radius: inherit; background: #5EA729; transition: width .12s linear; }
+
+      .scan-result { margin-top: 18px; border: 1px solid; border-radius: 8px; padding: 17px; background: #1d1c22; }
+      .scan-result > span { display: block; margin-bottom: 7px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+      .scan-result h2 { font-size: 18px; }
+      .scan-result p { margin-top: 6px; color: #cbc8d1; font-size: 14px; line-height: 1.35; }
+      .scan-result.success { border-color: #5EA729; }
+      .scan-result.success > span { color: #5EA729; }
+      .scan-result.failed { border-color: #A73D28; }
+      .scan-result.failed > span { color: #A73D28; }
+
+      form { margin-top: 26px; }
+      form > label, .modal label { display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px; }
+      textarea, .modal input { width: 100%; border: 1px solid #575261; border-radius: 7px; outline: none; background: #18171c; color: #fff; padding: 14px; }
+      textarea { min-height: 150px; resize: vertical; }
+      textarea:focus, .modal input:focus { border-color: #5EA729; box-shadow: 0 0 0 3px #5EA72925; }
+      .form-meta { display: flex; margin-top: 8px; align-items: center; justify-content: space-between; gap: 14px; color: #aaa6b4; font-size: 12px; }
+      .form-meta .primary { min-height: 50px; font-size: 16px; }
+
+      .results, .game-list { display: grid; gap: 12px; margin-top: 24px; }
+      .game-card { display: flex; justify-content: space-between; gap: 14px; border: 1px solid #3d3946; border-radius: 8px; padding: 16px; background: #1d1c22; }
+      .game-card strong, .game-card small { display: block; }
+      .game-card p { margin-top: 9px; color: #cbc8d1; font-size: 14px; line-height: 1.35; }
+      .game-confidence { display: block; margin-bottom: 5px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 10px; line-height: 1.3; text-transform: uppercase; letter-spacing: .04em; color: #5EA729; }
+
+      .save-button { align-self: flex-start; min-height: 38px; border: 1px solid #ffffff20; border-radius: 6px; background: #5EA729; color: #fff; padding: 8px 12px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; box-shadow: 0 3px 8px #0004; }
+      .save-button.danger-action { background: #A73D28; }
+
+      .profile-wrap { position: relative; }
+      .auth-actions { display: flex; gap: 8px; align-items: center; }
+      .auth-actions button { background: #5EA729; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+      .auth-actions button.profile-avatar { width: 38px; min-width: 38px; height: 38px; padding: 0; border-radius: 50%; background: #01579B; border: 2.5px solid #0288D1; color: #fff; font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+      .profile-backdrop { position: fixed; inset: 0; z-index: 8; }
+      .profile-dropdown { position: absolute; top: calc(100% + 10px); right: 0; min-width: 150px; background: #302d3d; border: 1px solid #494452; border-radius: 9px; padding: 6px; z-index: 9; }
+      .profile-name { padding: 9px 11px 10px; font-weight: 700; font-size: 12px; color: #aaa6b4; border-bottom: 1px solid #3d3946; margin-bottom: 5px; }
+      .profile-dropdown button { width: 100%; border: 0; background: none; text-align: left; padding: 8px 11px; font-weight: 700; font-size: 13px; color: #A73D28; cursor: pointer; border-radius: 5px; }
+
+      .rec-thumb { width: 54px; min-width: 54px; height: 72px; border-radius: 5px; object-fit: cover; display: block; flex-shrink: 0; }
+      .rec-info { flex: 1; min-width: 0; }
+
+      .detail-field.dirty { color: #A79F29; border-color: #A79F29; }
+      .year-field { width: 66px; }
+      .price-wrap { display: flex; align-items: center; background: #18171c; border: 1px solid #575261; border-radius: 5px; overflow: hidden; }
+      .price-prefix { padding: 5px 0 5px 9px; font-weight: 700; font-size: 13px; color: #aaa6b4; }
+      .price-field { border: 0; background: transparent; color: #fff; font-weight: 700; font-size: 13px; padding: 5px 9px 5px 3px; width: 80px; outline: none; }
+      .date-wrap { display: flex; align-items: center; gap: 3px; background: #18171c; border: 1px solid #575261; border-radius: 5px; padding: 4px 8px; }
+      .date-part { border: 0; background: transparent; color: #fff; font-weight: 700; font-size: 13px; width: 26px; text-align: center; outline: none; padding: 0; }
+      .date-part-year { width: 42px; }
+      .date-sep { color: #aaa6b4; font-weight: 700; font-size: 13px; }
+
+      .star-rating { display: flex; gap: 2px; align-items: center; }
+      .star-rating .star { font-size: 22px; color: #444; line-height: 1; }
+      .star-rating .star.on { color: #A79F29; }
+      .star-rating.interactive .star { cursor: pointer; font-size: 26px; }
+
+      .empty-state { padding: 35px 18px; border: 1px dashed #514c5b; border-radius: 8px; color: #aaa6b4; text-align: center; }
+
+      .result-actions { display: flex; gap: 16px; padding-top: 12px; border-top: 1px solid #2e2a3a; flex-wrap: wrap; }
+      .scan-result-inner { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+      .scan-result-cover { width: 90px; height: 120px; border-radius: 6px; object-fit: cover; flex-shrink: 0; display: block; }
+      .scan-result-info { flex: 1; min-width: 0; }
+      .scan-result-info h2 { font-size: 14px; line-height: 1.35; margin-bottom: 8px; }
+      .scan-meta-rows { display: grid; gap: 3px; }
+      .scan-meta-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; }
+      .scan-meta-row span:first-child { color: #aaa6b4; white-space: nowrap; }
+      .scan-meta-row span:last-child { font-weight: 700; color: #e8e5f0; text-align: right; }
+
+      .recently-added { margin-top: 28px; }
+      .section-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .recently-added h3 { font-weight: 700; font-size: 13px; color: #aaa6b4; margin: 0; text-transform: uppercase; letter-spacing: .05em; }
+      .recently-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+      .recent-card { flex: 0 0 78px; border: 1px solid #3d3946; border-radius: 7px; overflow: hidden; cursor: pointer; background: #1d1c22; padding: 0; text-align: left; }
+      .recent-cover { width: 78px; height: 104px; object-fit: cover; display: block; }
+      .recent-title { padding: 4px 6px 5px; font-weight: 700; font-size: 9px; color: #e8e5f0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+      .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+      .game-grid-card { border: 1px solid #3d3946; border-radius: 8px; overflow: hidden; cursor: pointer; background: #1d1c22; padding: 0; text-align: left; display: flex; flex-direction: column; width: 100%; }
+      .grid-cover { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+      .grid-card-body { padding: 9px 10px 11px; flex: 1; }
+      .grid-card-body strong { display: block; font-weight: 700; font-size: 11px; color: #e8e5f0; }
+      .grid-card-body small { display: block; margin-top: 3px; font-size: 10px; color: #aaa6b4; }
+
+      .collection-stats { display: flex; gap: 10px; }
+      .stat-pill { display: flex; flex-direction: column; align-items: center; background: #1d1c22; border: 1px solid #3d3946; border-radius: 8px; padding: 12px 20px; min-width: 72px; }
+      .stat-pill strong { font-weight: 800; font-size: 20px; color: #5EA729; }
+      .stat-pill span { font-size: 10px; color: #aaa6b4; text-transform: uppercase; }
+
+      .back-btn { display: inline-flex; align-items: center; gap: 5px; background: none; border: 0; color: #5EA729; font-weight: 700; font-size: 13px; cursor: pointer; padding: 0; margin-bottom: 18px; }
+      .edit-badge { display: inline-block; background: #D9A726; color: #17161b; font-weight: 800; font-size: 11px !important; padding: 3px 10px; border-radius: 4px; margin-bottom: 14px; }
+      .detail-cover-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
+      .detail-cover { width: 180px; height: 240px; border-radius: 10px; object-fit: cover; display: block; }
+      .detail-title { font-size: 22px; text-align: center; margin: 0 0 20px; }
+      .detail-meta { margin-bottom: 24px; }
+      .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #2a2830; gap: 12px; }
+      .detail-row label { font-weight: 700; font-size: 13px; color: #aaa6b4; }
+      .detail-row .val { font-weight: 700; font-size: 13px; color: #e8e5f0; }
+
+      .detail-actions { display: grid; gap: 10px; }
+      .detail-btn { border: 1px solid #ffffff20; border-radius: 6px; min-height: 52px; padding: 12px 18px; font-weight: 800; font-size: 17px; cursor: pointer; color: #fff; width: 100%; }
+      .detail-btn.danger { background: #A73D28; }
+
+      .modal-backdrop { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 18px; background: #0a090dc9; backdrop-filter: blur(4px); }
+      .modal { position: relative; width: min(360px, 100%); border: 1px solid #494452; border-radius: 10px; padding: 24px; background: #242328; }
+      .modal h2 { margin: 5px 0 22px; font-size: 26px; }
+      .modal .primary { width: 100%; min-height: 52px; margin: 8px 0 12px; font-size: 17px; }
+      .close { position: absolute; top: 10px; right: 12px; border: 0; background: none; color: #aaa6b4; font-size: 26px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      function todayStr() {
+        const d = new Date();
+        return `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
+      }
+
+      function makeId(title) {
+        return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      }
+
+      function getCurrentUserName() {
+        return localStorage.getItem("active_username") || "";
+      }
+
+      const state = {
+        page: "home",
+        loggedIn: !!getCurrentUserName(),
+        userName: getCurrentUserName(),
+        profileOpen: false,
+        sortOption: "date-added-newest",
+        sortDropdownOpen: false,
+        searchQuery: "",
+        searchBy: "title", // "title" or "system"
+        instructions: "",
+        submitted: "",
+        recommendationResult: [],
+        recommendationScanning: false,
+        recommendationError: null,
+        collection: [],
+        wishlist: [],
+        viewingGame: null,
+        editing: false,
+        editDraft: null,
+        auth: null,
+        scanPreview: "",
+        scanProgress: 0,
+        scanResult: null,
+        scanErrorMessage: "",
+        scanGame: null,
+        scanGames: [],
+        scanning: false,
+        scanFile: null,
+        undoEntry: null,
+        undoTimer: null,
+      };
+
+      async function loadUserData(username, callback) {
+        if (!username) return;
+        try {
+          const res = await fetch(`/api/user/${username}`);
+          if (res.ok) {
+            const data = await res.json();
+            state.collection = data.collection || [];
+            state.wishlist = data.wishlist || [];
+            state.sortOption = "date-added-newest";
+            state.searchQuery = "";
+            state.searchBy = "title";
+            if (callback) callback();
+          }
+        } catch(e) {
+          console.error("Failed to load user data", e);
+        }
+      }
+
+      async function persistState() {
+        if (state.loggedIn && state.userName) {
+          try {
+            await fetch(`/api/user/${state.userName}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ collection: state.collection, wishlist: state.wishlist })
+            });
+          } catch(e) {
+            console.error("Failed to persist data", e);
+          }
+        }
+      }
+
+      const appContainer = document.querySelector("#app");
+
+      function escapeHtml(value) {
+        return String(value || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[c]);
+      }
+
+      function coverHtml(game, cls) {
+        if (game.coverImage) {
+          return `<img src="${escapeHtml(game.coverImage)}" alt="${escapeHtml(game.title)}" class="${cls}">`;
+        }
+        return `<div class="${cls} cover-ph"><span class="ph-text">${escapeHtml(game.title)}</span></div>`;
+      }
+
+      function inCollection(title) { return state.collection.some((g) => g.title === title); }
+      function onWishlist(title) { return state.wishlist.some((w) => w.title === title); }
+
+      function removeFromCollection(title) {
+        const game = state.collection.find((entry) => entry.title === title);
+        if (!game) return;
+        state.collection = state.collection.filter((entry) => entry.title !== title);
+        persistState();
+        if (state.undoTimer) clearTimeout(state.undoTimer);
+        state.undoEntry = { game, source: "collection" };
+        state.undoTimer = setTimeout(() => { state.undoEntry = null; state.undoTimer = null; render(); }, 5000);
+      }
+
+      function removeFromWishlist(title) {
+        const game = state.wishlist.find((entry) => entry.title === title);
+        if (!game) return;
+        state.wishlist = state.wishlist.filter((entry) => entry.title !== title);
+        persistState();
+        if (state.undoTimer) clearTimeout(state.undoTimer);
+        state.undoEntry = { game, source: "wishlist" };
+        state.undoTimer = setTimeout(() => { state.undoEntry = null; state.undoTimer = null; render(); }, 5000);
+      }
+
+      function totalValue() {
+        return state.collection.reduce((sum, g) => {
+          const n = parseFloat((g.avgPrice || "").replace(/[^0-9.]/g, ""));
+          return sum + (isNaN(n) ? 0 : n);
+        }, 0);
+      }
+
+      function getFilteredAndSortedCollection() {
+        let list = [...state.collection];
+
+        // Filter by search query dynamically
+        const query = (state.searchQuery || "").toLowerCase().trim();
+        if (query) {
+          list = list.filter((game) => {
+            if (state.searchBy === "system") {
+              const gameSys = (game.system || "").toLowerCase().replace(/\s+/g, "");
+              const q = query.replace(/\s+/g, "");
+              const normGameSys = gameSys.replace(/playstation/g, "ps");
+              const normQuery = q.replace(/playstation/g, "ps");
+              return normGameSys.includes(normQuery);
+            } else {
+              return (game.title || "").toLowerCase().includes(query);
+            }
+          });
+        }
+
+        // Sort items
+        const opt = state.sortOption || "date-added-newest";
+        if (opt === "date-added-newest") {
+          list.sort((a, b) => new Date(b.dateAdded || 0) - new Date(a.dateAdded || 0));
+        } else if (opt === "date-added-oldest") {
+          list.sort((a, b) => new Date(a.dateAdded || 0) - new Date(b.dateAdded || 0));
+        } else if (opt === "release-newest") {
+          list.sort((a, b) => {
+            const yearA = parseInt((a.year || "0").replace(/[^0-9]/g, "")) || 0;
+            const yearB = parseInt((b.year || "0").replace(/[^0-9]/g, "")) || 0;
+            return yearB - yearA;
+          });
+        } else if (opt === "release-oldest") {
+          list.sort((a, b) => {
+            const yearA = parseInt((a.year || "0").replace(/[^0-9]/g, "")) || 0;
+            const yearB = parseInt((b.year || "0").replace(/[^0-9]/g, "")) || 0;
+            return yearA - yearB;
+          });
+        } else if (opt === "price-low-high") {
+          list.sort((a, b) => {
+            const priceA = parseFloat((a.avgPrice || "0").replace(/[^0-9.]/g, "")) || 0;
+            const priceB = parseFloat((b.avgPrice || "0").replace(/[^0-9.]/g, "")) || 0;
+            return priceA - priceB;
+          });
+        } else if (opt === "price-high-low") {
+          list.sort((a, b) => {
+            const priceA = parseFloat((a.avgPrice || "0").replace(/[^0-9.]/g, "")) || 0;
+            const priceB = parseFloat((b.avgPrice || "0").replace(/[^0-9.]/g, "")) || 0;
+            return priceB - priceA;
+          });
+        } else if (opt === "console-alpha") {
+          list.sort((a, b) => {
+            const sysA = (a.system || "").toLowerCase();
+            const sysB = (b.system || "").toLowerCase();
+            return sysA.localeCompare(sysB);
+          });
+        }
+        return list;
+      }
+
+      function homePage() {
+        const recentlyAdded = state.loggedIn ? `
+          <div class="recently-added" style="margin-top: 20px;">
+            <div class="section-title-row"><h3>Recently Added Games</h3></div>
+            ${state.collection.length > 0 ? `<div class="recently-scroll">
+              ${[...state.collection].reverse().slice(0, 8).map((game) => `
+                <button class="recent-card open-game" data-id="${escapeHtml(game.id)}" data-source="collection">
+                  ${coverHtml(game, "recent-cover")}
+                  <div class="recent-title">${escapeHtml(game.title)}</div>
+                </button>
+              `).join("")}
+            </div>` : '<p style="font-size:14px; color:#aaa6b4;">No games in your collection yet.</p>'}
+          </div>` : "";
+
+        return `
+          <div style="text-align:center; padding: 20px 0;">
+            <img src="/logo.png" alt="Collector's Companion" style="max-height: 60px; object-fit: contain; margin-bottom: 8px;">
+            <p style="font-size:14px; color:#aaa6b4; margin-top: 4px;">Powered by Gemini 2.5 Flash AI</p>
+          </div>
+          <section>
+            <p>Scan game cover art with Gemini Vision AI, get AI recommendations, and track your library.</p>
+          </section>
+          <div class="action-row" style="padding-bottom: 12px;">
+            <button class="primary green" data-page="scan">Start Scanning Games</button>
+          </div>
+          ${recentlyAdded}
+          <div class="action-row" style="margin-top: 16px; padding-bottom: 12px;">
+            <button class="primary olive" data-page="recommendations">Search for<br>Recommendations</button>
+          </div>
+        `;
+      }
+
+      function scanPage() {
+        let resultSection = "";
+        if (state.scanResult === "success" && state.scanGames && state.scanGames.length > 0) {
+          resultSection = state.scanGames.map((scanGame, idx) => {
+            const scanGameInCol = inCollection(scanGame.title);
+            const scanGameOnWish = onWishlist(scanGame.title);
+            const cleanedYear = (scanGame.releaseDate || scanGame.year || "").replace(/["']/g, "");
+            return `
+              <div class="scan-result success" ${idx > 0 ? 'style="margin-top: 14px;"' : ''}>
+                <span>Successful AI Match · ${scanGame.confidence || 95}% confidence</span>
+                <div class="scan-result-inner">
+                  ${coverHtml(scanGame, "scan-result-cover")}
+                  <div class="scan-result-info">
+                    <h2>${escapeHtml(scanGame.title)}</h2>
+                    <div class="scan-meta-rows">
+                      <div class="scan-meta-row"><span>Platform</span><span>${escapeHtml(scanGame.system)}</span></div>
+                      <div class="scan-meta-row"><span>Publisher</span><span>${escapeHtml(scanGame.publisher || "N/A")}</span></div>
+                      <div class="scan-meta-row"><span>Region</span><span>${escapeHtml(scanGame.region || "N/A")}</span></div>
+                      <div class="scan-meta-row"><span>Release Date</span><span>${escapeHtml(cleanedYear || "N/A")}</span></div>
+                      <div class="scan-meta-row"><span>Avg. Price</span><span>${escapeHtml(scanGame.avgPrice || "N/A")}</span></div>
+                      <div class="scan-meta-row"><span>Condition</span><span>${escapeHtml(scanGame.condition || "Complete in Box (CIB)")}</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="result-actions">
+                    ${state.loggedIn ? `
+                    <button class="save-button ${scanGameInCol ? "danger-action remove-from-collection" : "add-to-collection"}"
+                        data-title="${escapeHtml(scanGame.title)}"
+                        data-system="${escapeHtml(scanGame.system)}"
+                        data-year="${escapeHtml(cleanedYear)}"
+                        data-price="${escapeHtml(scanGame.avgPrice || "")}"
+                        data-condition="${escapeHtml(scanGame.condition || "Complete in Box (CIB)")}"
+                        data-region="${escapeHtml(scanGame.region || "N/A")}"
+                        data-cover="${escapeHtml(scanGame.coverImage || "")}">
+                        ${scanGameInCol ? "- Remove From Collection" : "+ Add to Collection"}
+                    </button>
+                    <button class="save-button ${scanGameOnWish ? "danger-action remove-from-wishlist" : "add-to-wishlist"}"
+                        data-title="${escapeHtml(scanGame.title)}"
+                        data-system="${escapeHtml(scanGame.system)}"
+                        data-region="${escapeHtml(scanGame.region || "N/A")}"
+                        data-year="${escapeHtml(cleanedYear)}"
+                        data-cover="${escapeHtml(scanGame.coverImage || "")}">
+                        ${scanGameOnWish ? "- Wishlist" : "+ Wishlist"}
+                    </button>
+                    ` : `
+                    <button class="save-button" data-auth="Login">
+                        Login to save
+                    </button>
+                    `}
+                </div>
+              </div>`;
+          }).join("");
+        } else if (state.scanResult === "error") {
+          resultSection = `
+            <div class="scan-result failed">
+              <span>Scan Failed</span>
+              <h2>Something went wrong</h2>
+              <p>${escapeHtml(state.scanErrorMessage || "Failed to communicate with Gemini AI.")}</p>
+            </div>`;
+        }
+
+        const showActionButtons = !state.scanning && (state.scanResult === "success" || state.scanResult === "error");
+
+        return `
+          <section class="tool-page">
+            <p class="eyebrow">GEMINI VISION AI SCANNER</p>
+            <h1>Scan a game</h1>
+            <p>Upload a photo of a game box art case. Gemini Vision AI will analyze it.</p>
+            <label class="upload-box ${state.scanPreview ? "has-preview" : ""}">
+              ${state.scanPreview ? `<img src="${escapeHtml(state.scanPreview)}" alt="Selected game">` : '<span class="upload-mark">+</span>'}
+              <strong>${state.scanPreview ? "Choose another photo" : "Choose a game photo"}</strong>
+              <input id="game-photo" type="file" accept="image/*" ${state.scanning ? "disabled" : ""}>
+            </label>
+            ${showActionButtons ? `
+              <div class="scan-actions-container">
+                <button type="button" class="scan-action-btn btn-rescan" id="btn-rescan">Rescan Game</button>
+                <button type="button" class="scan-action-btn btn-upload-new" id="btn-upload-new">Upload New Photo</button>
+              </div>` : ""}
+            ${state.scanning ? `
+              <div class="scan-processing">
+                <div class="processing-label"><span>Analyzing image with Gemini AI...</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+              </div>` : ""}
+            ${resultSection}
+          </section>`;
+      }
+
+      function collectionPage() {
+        const filteredCollection = getFilteredAndSortedCollection();
+        const total = totalValue();
+        const gridHtml = filteredCollection.length ? `
+          <div class="game-grid">
+            ${filteredCollection.map((game) => `
+              <button class="game-grid-card open-game" data-id="${escapeHtml(game.id)}" data-source="collection">
+                ${coverHtml(game, "grid-cover")}
+                <div class="grid-card-body" style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                  <div style="min-width: 0; flex: 1;">
+                    <strong>${escapeHtml(game.title)}</strong>
+                    <small>${escapeHtml(game.system)}</small>
+                  </div>
+                  ${game.avgPrice ? `<strong style="font-size: 11px; white-space: nowrap; text-align: right; color: #5EA729;">${escapeHtml(game.avgPrice)}</strong>` : ''}
+                </div>
+              </button>
+            `).join("")}
+          </div>` : `<div class="empty-state"><p>No games found matching your search.</p></div>`;
+
+        const sortLabels = {
+          "date-added-newest": "Date Added: Newest",
+          "date-added-oldest": "Date Added: Oldest",
+          "release-newest": "Release Date: Newest",
+          "release-oldest": "Release Date: Oldest",
+          "price-low-high": "Price: Cheapest First",
+          "price-high-low": "Price: Most Expensive First",
+          "console-alpha": "Console (A-Z)"
+        };
+
+        return `
+          <section class="tool-page">
+            <p class="eyebrow">MY COLLECTION</p>
+            <h1>Collection</h1>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;">
+              <!-- Stats row (Games and Value on the left) -->
+              <div class="collection-stats">
+                <div class="stat-pill"><strong>${state.collection.length}</strong><span>games</span></div>
+                <div class="stat-pill"><strong>$${total.toFixed(2)}</strong><span>value</span></div>
+              </div>
+
+              <!-- Larger Search Bar (2x larger layout) -->
+              <div class="collection-search-wrap" style="width: 100%; display: flex; background: #18171c; border: 1px solid #575261; border-radius: 8px; overflow: hidden;">
+                <input type="text" id="collection-search-input" value="${escapeHtml(state.searchQuery)}" placeholder="Search collection..." style="background: transparent; border: none; outline: none; color: #fff; padding: 16px 18px; font-size: 16px; width: 100%;">
+                <select id="search-by-select" style="background: #242328; border: none; border-left: 1px solid #575261; color: #aaa6b4; font-size: 13px; font-weight: 700; padding: 0 14px; outline: none; cursor: pointer;">
+                  <option value="title" ${state.searchBy === 'title' ? 'selected' : ''}>Name</option>
+                  <option value="system" ${state.searchBy === 'system' ? 'selected' : ''}>System</option>
+                </select>
+              </div>
+
+              <!-- Sort Button (below search bar, left aligned) -->
+              <div class="sort-dropdown-wrap" style="position: relative; align-self: flex-start;">
+                <button type="button" id="sort-toggle-btn" class="sort-btn" style="background-color: #17161B; border: 2px solid #5EA729; color: #fff; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  Sort: ${sortLabels[state.sortOption] || "Sort"} &#9662;
+                </button>
+                ${state.sortDropdownOpen ? `
+                  <div class="sort-backdrop" id="sort-backdrop" style="position: fixed; inset: 0; z-index: 15;"></div>
+                  <div class="sort-dropdown" style="position: absolute; left: 0; top: calc(100% + 6px); background: #302d3d; border: 1px solid #494452; border-radius: 8px; padding: 6px; z-index: 16; min-width: 220px; box-shadow: 0 8px 24px #0009;">
+                    <button class="sort-option-btn" data-sort="date-added-newest" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'date-added-newest' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Date Added (Newest to Oldest)</button>
+                    <button class="sort-option-btn" data-sort="date-added-oldest" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'date-added-oldest' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Date Added (Oldest to Newest)</button>
+                    <button class="sort-option-btn" data-sort="release-newest" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'release-newest' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Release Date (Newest to Oldest)</button>
+                    <button class="sort-option-btn" data-sort="release-oldest" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'release-oldest' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Release Date (Oldest to Newest)</button>
+                    <button class="sort-option-btn" data-sort="price-low-high" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'price-low-high' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Price (Cheapest to Most Expensive)</button>
+                    <button class="sort-option-btn" data-sort="price-high-low" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'price-high-low' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Price (Most Expensive to Cheapest)</button>
+                    <button class="sort-option-btn" data-sort="console-alpha" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 10px; color: ${state.sortOption === 'console-alpha' ? '#5EA729' : '#fff'}; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px;">Console (Alphabetical Order)</button>
+                  </div>
+                ` : ""}
+              </div>
+            </div>
+
+            <div id="dynamic-grid-container">
+              ${gridHtml}
+            </div>
+          </section>`;
+      }
+
+      function wishlistPage() {
+        const gridHtml = state.wishlist.length ? `
+          <div class="game-grid">
+            ${state.wishlist.map((game) => `
+              <button class="game-grid-card open-game" data-id="${escapeHtml(game.id)}" data-source="wishlist">
+                ${coverHtml(game, "grid-cover")}
+                <div class="grid-card-body">
+                  <strong>${escapeHtml(game.title)}</strong>
+                  <small>${escapeHtml(game.system)}</small>
+                </div>
+              </button>
+            `).join("")}
+          </div>` : `<div class="empty-state"><p>Your wishlist is empty.</p></div>`;
+
+        return `
+          <section class="tool-page">
+            <p class="eyebrow">WANT TO PLAY</p>
+            <h1>Wishlist</h1>
+            ${gridHtml}
+          </section>`;
+      }
+
+      function gameDetailPage() {
+        if (!state.viewingGame) return "";
+        const { game, source } = state.viewingGame;
+
+        if (source === "collection") {
+          if (state.editing && state.editDraft) {
+            const draft = state.editDraft;
+            return `
+              <section class="tool-page">
+                <span class="edit-badge">EDITING MODE</span>
+                <div class="detail-cover-wrap">${coverHtml(draft, "detail-cover")}</div>
+                <div class="detail-meta" style="margin-top:14px;">
+                <div class="detail-row"><label>Cover Image URL</label><input type="text" id="edit-cover" value="${escapeHtml(draft.coverImage || "")}" style="background:#18171c; border:1px solid #575261; border-radius:5px; padding:6px; color:#fff; width:60%;"></div>
+                  <div class="detail-row"><label>Title</label><input type="text" id="edit-title" value="${escapeHtml(draft.title)}" style="background:#18171c; border:1px solid #575261; border-radius:5px; padding:6px; color:#fff; width:60%;"></div>
+                  <div class="detail-row"><label>Platform</label><input type="text" id="edit-system" value="${escapeHtml(draft.system)}" style="background:#18171c; border:1px solid #575261; border-radius:5px; padding:6px; color:#fff; width:60%;"></div>
+                  <div class="detail-row"><label>Region</label><input type="text" id="edit-region" value="${escapeHtml(draft.region || "")}" style="background:#18171c; border:1px solid #575261; border-radius:5px; padding:6px; color:#fff; width:60%;"></div>
+                  <div class="detail-row"><label>Released Year</label><input type="text" id="edit-year" class="year-field" value="${escapeHtml(draft.year || "")}" style="background:#18171c; border:1px solid #575261; border-radius:5px; padding:6px; color:#fff;"></div>
+                  <div class="detail-row"><label>Avg Price</label><div class="price-wrap"><span class="price-prefix">$</span><input type="text" id="edit-price" class="price-field" value="${escapeHtml((draft.avgPrice || "").replace(/[^0-9.]/g, ""))}"></div ></div>
+                  <div class="detail-row"><label>Condition</label>
+                    <select id="edit-condition" style="background:#18171c; border:1px solid #575261; border-radius:5px; padding:6px; color:#fff; width:60%;">
+                      <option value="Complete in Box (CIB)" ${draft.condition === "Complete in Box (CIB)" ? "selected" : ""}>Complete in Box (CIB)</option>
+                      <option value="Loose" ${draft.condition === "Loose" ? "selected" : ""}>Loose</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="detail-actions" style="display:grid; gap:10px;">
+                  <button class="detail-btn primary green" id="save-edit-btn" style="min-height:45px;">Save Changes</button>
+                  <button class="detail-btn" id="cancel-edit-btn" style="background:#444; min-height:45px;">Cancel</button>
+                </div>
+              </section>`;
+          }
+
+          return `
+            <section class="tool-page">
+              <button class="back-btn" id="back-btn">&larr; Back to Collection</button>
+              <div class="detail-cover-wrap">${coverHtml(game, "detail-cover")}</div>
+              <h1 class="detail-title">${escapeHtml(game.title)}</h1>
+              <div class="detail-meta">
+                <div class="detail-row"><label>Platform</label><span class="val">${escapeHtml(game.system)}</span></div>
+                <div class="detail-row"><label>Region</label><span class="val">${escapeHtml(game.region || "N/A")}</span></div>
+                <div class="detail-row"><label>Released</label><span class="val">${escapeHtml(game.year || "—")}</span></div>
+                <div class="detail-row"><label>Avg Selling Price</label><span class="val">${escapeHtml(game.avgPrice || "&mdash;")}</span></div>
+                <div class="detail-row"><label>Date Added</label><span class="val">${escapeHtml(game.dateAdded || "&mdash;")}</span></div>
+                <div class="detail-row"><label>Condition</label><span class="val">${escapeHtml(game.condition || "Complete in Box (CIB)")}</span></div>
+              </div>
+              <div class="detail-actions" style="display:grid; gap:10px;">
+                <button class="detail-btn primary green" id="edit-game-btn" style="min-height:45px;">Edit Item</button>
+                <button class="detail-btn danger" id="remove-game-btn" style="min-height:45px;">- Remove From Collection</button>
+              </div>
+            </section>`;
+        }
+
+        return `
+          <section class="tool-page">
+            <button class="back-btn" id="back-btn">&larr; Back to Wishlist</button>
+            <div class="detail-cover-wrap">${coverHtml(game, "detail-cover")}</div>
+            <h1 class="detail-title">${escapeHtml(game.title)}</h1>
+            <div class="detail-meta">
+              <div class="detail-row"><label>Platform</label><span class="val">${escapeHtml(game.system)}</span></div>
+            </div>
+            <div class="detail-actions">
+              <button class="detail-btn danger" id="remove-game-btn">- Remove From Wishlist</button>
+            </div>
+          </section>`;
+      }
+
+      function recommendationsPage() {
+        let results = "";
+        if (state.recommendationError) {
+          results = `
+            <div class="scan-result failed" style="margin-top: 18px;">
+              <span>Recommendation Failed</span>
+              <h2>Something went wrong</h2>
+              <p>${escapeHtml(state.recommendationError)}</p>
+            </div>`;
+        } else if (state.submitted && state.recommendationResult.length > 0) {
+          results = `
+            <div class="results" aria-live="polite">
+              ${state.recommendationResult.map((game) => {
+                const saved = state.loggedIn && onWishlist(game.title);
+                const searchQuery = encodeURIComponent(`${game.title} ${game.system} video game`);
+                const verifyUrl = `https://www.google.com/search?q=${searchQuery}`;
+                return `
+                  <article class="game-card recommendation-card success" style="border-color: #5EA729;">
+                    ${coverHtml(game, "rec-thumb")}
+                    <div class="rec-info">
+                      <span class="game-confidence">Match Confidence · ${game.confidence}%</span>
+                      <strong>${escapeHtml(game.title)}</strong>
+                      <small>${escapeHtml(game.system)}</small>
+                      <p>${escapeHtml(game.reason)}</p>
+                      <div style="margin-top: 8px; font-size: 12px;">
+                        <a href="${verifyUrl}" target="_blank" style="color: #aaa6b4; text-decoration: none; font-weight: 700;">
+                          Verify Game Online &nearr;
+                        </a>
+                      </div>
+                    </div>
+                    ${state.loggedIn ? `
+                        <button class="save-button rec-wishlist ${saved ? "danger-action remove-from-wishlist" : ""}"
+                            data-title="${escapeHtml(game.title)}"
+                            data-system="${escapeHtml(game.system)}"
+                            data-cover="${escapeHtml(game.coverImage || "")}">
+                            ${saved ? "- Wishlist" : "+ Wishlist"}
+                        </button>
+                    ` : `
+                        <button class="save-button" data-auth="Login">
+                            Login to save
+                        </button>
+                    `}
+                  </article>`;
+              }).join("")}
+            </div>`;
+        }
+
+        return `
+          <section class="tool-page">
+            <p class="eyebrow">GEMINI AI RECOMMENDATIONS</p>
+            <h1>Recommendations</h1>
+            <p>Tell Gemini what games you love, platforms you own, or specific themes you want.</p>
+            <form id="recommendation-form">
+              <label for="instructions">Your prompt</label>
+              <textarea id="instructions" maxlength="500" placeholder="e.g. Tactical RPGs for Nintendo Switch or retro 90s platformers">${escapeHtml(state.instructions)}</textarea>
+              <div class="form-meta">
+                <button class="primary olive" type="submit" ${state.recommendationScanning ? "disabled" : ""}>Get Recommendations</button>
+              </div>
+            </form>
+            ${state.recommendationScanning ? `
+              <div class="scan-processing">
+                <div class="processing-label"><span>Asking Gemini AI for recommendations...</span></div>
+              </div>` : ""}
+            ${results}
+          </section>`;
+      }
+
+      function authModal() {
+        if (!state.auth) return "";
+        return `
+          <div class="modal-backdrop">
+            <div class="modal" role="dialog" aria-modal="true">
+              <button class="close">&times;</button>
+              <h2>${state.auth}</h2>
+              <label>Username<input type="text" id="auth-username" placeholder="Username"></label>
+              <label>Password<input type="password" id="auth-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></label>
+              <button class="primary green auth-continue">${state.auth}</button>
+            </div>
+          </div>`;
+      }
+
+      function render() {
+        const pages = { home: homePage, scan: scanPage, collection: collectionPage, wishlist: wishlistPage, recommendations: recommendationsPage };
+        const activePage = state.viewingGame ? (state.viewingGame.source === "collection" ? "collection" : "wishlist") : state.page;
+        const mainContent = state.viewingGame ? gameDetailPage() : pages[state.page]();
+        const formattedUserDisplay = state.loggedIn ? state.userName.toUpperCase().slice(0, 2) : "";
+
+        appContainer.innerHTML = `
+          <div class="app-shell">
+            <header>
+              <div class="topbar">
+                <button class="brand" data-page="home" style="background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center;">
+                  <img src="/logo.png" alt="Collector's Companion" style="height: 28px; object-fit: contain;">
+                </button>
+                <div class="auth-actions">
+                  ${state.loggedIn
+                    ? `<div class="profile-wrap">
+                        <button class="profile-avatar" id="profile-toggle">${formattedUserDisplay}</button>
+                        ${state.profileOpen ? `
+                          <div class="profile-backdrop" id="profile-backdrop"></div>
+                          <div class="profile-dropdown">
+                            <div class="profile-name">${escapeHtml(state.userName)}</div>
+                            <button id="logout">Log Out</button>
+                          </div>` : ""}
+                      </div>`
+                    : '<button data-auth="Sign Up">Sign Up</button><button data-auth="Login">Login</button>'}
+                </div>
+              </div>
+            </header>
+            <main>${mainContent}</main>
+            <nav class="bottom-nav">
+              <button class="${activePage === "scan" ? "active" : ""}" data-page="scan">Scan</button>
+              <button class="${activePage === "recommendations" ? "active" : ""}" data-page="recommendations">Recommend</button>
+              ${state.loggedIn ? `
+                <button class="${activePage === "collection" ? "active" : ""}" data-page="collection">Collection</button>
+                <button class="${activePage === "wishlist" ? "active" : ""}" data-page="wishlist">Wishlist</button>
+              ` : ""}
+            </nav>
+            ${authModal()}
+          </div>
+        `;
+        bindEvents();
+      }
+
+      function navigate(target) {
+        if ((target === "wishlist" || target === "collection") && !state.loggedIn) {
+          state.auth = "Login"; render(); return;
+        }
+
+        // 1. Force window and document to absolute top instantly to kill momentum anchoring
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+
+        state.viewingGame = null;
+        state.page = target;
+
+        // 2. Render the new page
+        render();
+
+        // 3. Multi-stage aggressive scroll wipe on the main container
+        const mainEl = document.querySelector("main");
+        if (mainEl) {
+          mainEl.scrollTop = 0;
+        }
+
+        // 4. Double-tap via requestAnimationFrame to ensure mobile layout engine accepts the top reset
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          const freshMain = document.querySelector("main");
+          if (freshMain) {
+            freshMain.scrollTop = 0;
+          }
+        });
+      }
+
+      async function processImage(file) {
+        state.scanFile = file;
+        state.scanPreview = URL.createObjectURL(file);
+        state.scanning = true;
+        state.scanResult = null;
+        state.scanErrorMessage = "";
+        render();
+
+        const reader = new FileReader();
+        reader.onload = async function() {
+          try {
+            const res = await fetch("/api/scan", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ image_base64: reader.result })
+            });
+            const data = await res.json();
+            if (res.ok && data.status === "success") {
+              state.scanGames = data.games || (data.game ? [data.game] : []);
+              state.scanGame = state.scanGames[0] || null;
+              state.scanResult = "success";
+            } else {
+              state.scanResult = "error";
+              state.scanErrorMessage = data.message || "Failed to scan image.";
+            }
+          } catch(e) {
+            state.scanResult = "error";
+            state.scanErrorMessage = "Network error or server unreachable.";
+          } finally {
+            state.scanning = false;
+            render();
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      async function handleLoginOrSignup() {
+        const username = document.querySelector("#auth-username").value.trim().toLowerCase();
+        const password = document.querySelector("#auth-password").value;
+        const endpoint = state.auth === "Sign Up" ? "/api/signup" : "/api/login";
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          state.loggedIn = true;
+          state.userName = username;
+          state.sortOption = "date-added-newest";
+          state.searchQuery = "";
+          state.searchBy = "title";
+          localStorage.setItem("active_username", username);
+          state.auth = null;
+          await loadUserData(username, () => { render(); });
+        } else {
+          alert(data.error || "Authentication failed");
+        }
+      }
+
+      function bindEvents() {
+        document.querySelectorAll("[data-page]").forEach((btn) => btn.addEventListener("click", () => navigate(btn.dataset.page)));
+        document.querySelectorAll("[data-auth]").forEach((btn) =>
+            btn.addEventListener("click", () => {
+                state.auth = btn.dataset.auth;
+                render();
+            })
+        );
+
+        document.querySelector(".close")?.addEventListener("click", () => { state.auth = null; render(); });
+        document.querySelector(".auth-continue")?.addEventListener("click", handleLoginOrSignup);
+
+        document.querySelector("#logout")?.addEventListener("click", () => {
+          state.loggedIn = false; state.userName = ""; localStorage.removeItem("active_username"); state.page = "home"; render();
+        });
+
+        document.querySelector("#profile-toggle")?.addEventListener("click", () => { state.profileOpen = !state.profileOpen; render(); });
+        document.querySelector("#profile-backdrop")?.addEventListener("click", () => { state.profileOpen = false; render(); });
+
+        document.querySelector("#sort-toggle-btn")?.addEventListener("click", () => {
+          state.sortDropdownOpen = !state.sortDropdownOpen;
+          render();
+        });
+
+        document.querySelector("#sort-backdrop")?.addEventListener("click", () => {
+          state.sortDropdownOpen = false;
+          render();
+        });
+
+        document.querySelectorAll(".sort-option-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.sortOption = btn.dataset.sort;
+            state.sortDropdownOpen = false;
+            render();
+          });
+        });
+
+        const searchInput = document.querySelector("#collection-search-input");
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
+            state.searchQuery = e.target.value;
+            const gridContainer = document.querySelector("#dynamic-grid-container");
+            if (gridContainer) {
+              const filtered = getFilteredAndSortedCollection();
+              gridContainer.innerHTML = filtered.length ? `
+                <div class="game-grid">
+                  ${filtered.map((game) => `
+                    <button class="game-grid-card open-game" data-id="${escapeHtml(game.id)}" data-source="collection">
+                      ${coverHtml(game, "grid-cover")}
+                      <div class="grid-card-body" style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                        <div style="min-width: 0; flex: 1;">
+                          <strong>${escapeHtml(game.title)}</strong>
+                          <small>${escapeHtml(game.system)}</small>
+                        </div>
+                        ${game.avgPrice ? `<strong style="font-size: 11px; white-space: nowrap; text-align: right; color: #5EA729;">${escapeHtml(game.avgPrice)}</strong>` : ''}
+                      </div>
+                    </button>
+                  `).join("")}
+                </div>` : `<div class="empty-state"><p>No games found matching your search.</p></div>`;
+
+              gridContainer.querySelectorAll(".open-game").forEach((cardBtn) => {
+                cardBtn.addEventListener("click", () => {
+                  const list = cardBtn.dataset.source === "collection" ? state.collection : state.wishlist;
+                  state.viewingGame = { game: list.find(g => g.id === cardBtn.dataset.id), source: cardBtn.dataset.source };
+                  render();
+                  const mainEl = document.querySelector("main");
+                  if (mainEl) mainEl.scrollTop = 0;
+                });
+              });
+            }
+          });
+        }
+
+        document.querySelector("#search-by-select")?.addEventListener("change", (e) => {
+          state.searchBy = e.target.value;
+          render();
+        });
+
+        document.querySelectorAll(".open-game").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const list = btn.dataset.source === "collection" ? state.collection : state.wishlist;
+            state.viewingGame = { game: list.find(g => g.id === btn.dataset.id), source: btn.dataset.source };
+            render();
+            const mainEl = document.querySelector("main");
+            if (mainEl) mainEl.scrollTop = 0;
+          });
+        });
+
+        document.querySelector("#back-btn")?.addEventListener("click", () => {
+          state.viewingGame = null;
+          render();
+          const mainEl = document.querySelector("main");
+          if (mainEl) mainEl.scrollTop = 0;
+        });
+
+        document.querySelector("#remove-game-btn")?.addEventListener("click", () => {
+          if (state.viewingGame.source === "collection") removeFromCollection(state.viewingGame.game.title);
+          else removeFromWishlist(state.viewingGame.game.title);
+          state.viewingGame = null;
+          render();
+          const mainEl = document.querySelector("main");
+          if (mainEl) mainEl.scrollTop = 0;
+        });
+
+        document.querySelectorAll(".add-to-collection").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const { title, system, year, cover, price, condition, region } = btn.dataset;
+                const cleanedYear = (year || "").replace(/["']/g, "").trim();
+
+                if (!inCollection(title)) {
+                    state.collection.push({
+                    id: makeId(title),
+                    title,
+                    system,
+                    year: cleanedYear,
+                    coverImage: cover,
+                    condition,
+                    avgPrice: price,
+                    region: region || "N/A",
+                    dateAdded: todayStr()
+                });
+                persistState();
+                render();
+            }
+        });
+    });
+
+        document.querySelectorAll(".add-to-wishlist, .rec-wishlist:not(.remove-from-wishlist)").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const { title, system, cover } = btn.dataset;
+                if (!onWishlist(title)) {
+                    state.wishlist.push({
+                        id: makeId(title),
+                        title,
+                        system,
+                        coverImage: cover || ""
+                    });
+                    persistState();
+                    render();
+                }
+            });
+        });
+
+        document.querySelector("#game-photo")?.addEventListener("change", (e) => {
+          if (e.target.files[0]) processImage(e.target.files[0]);
+        });
+
+        document.querySelector("#btn-rescan")?.addEventListener("click", () => {
+          if (state.scanFile) {
+            processImage(state.scanFile);
+          }
+        });
+
+        document.querySelector("#btn-upload-new")?.addEventListener("click", () => {
+          document.querySelector("#game-photo")?.click();
+        });
+
+        document.querySelector("#recommendation-form")?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const textarea = document.querySelector("#instructions");
+          if (!textarea.value.trim()) return;
+
+          state.instructions = textarea.value.trim();
+          state.submitted = textarea.value.trim();
+          state.recommendationScanning = true;
+          state.recommendationError = null;
+          state.recommendationResult = [];
+          render();
+
+          try {
+            const res = await fetch("/api/recommend", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ instructions: state.submitted })
+            });
+            const data = await res.json();
+            if (res.ok && data.status === "success") {
+              state.recommendationResult = data.recommendations;
+            } else {
+              state.recommendationError = data.message || "Failed to generate recommendations.";
+            }
+          } catch(err) {
+            state.recommendationError = "Network error or server unreachable.";
+          } finally {
+            state.recommendationScanning = false;
+            render();
+          }
+        });
+        document.querySelector("#edit-game-btn")?.addEventListener("click", () => {
+          state.editing = true;
+          state.editDraft = { ...state.viewingGame.game };
+          render();
+        });
+
+        document.querySelector("#cancel-edit-btn")?.addEventListener("click", () => {
+          state.editing = false;
+          state.editDraft = null;
+          render();
+        });
+
+        document.querySelectorAll(".star-rating.interactive .star").forEach((star) => {
+          star.addEventListener("click", () => {
+            if (state.editDraft) {
+              state.editDraft.condition = star.dataset.star;
+              render();
+            }
+          });
+        });
+
+        document.querySelector("#save-edit-btn")?.addEventListener("click", () => {
+            if (!state.editDraft) return;
+                const titleInput = document.querySelector("#edit-title").value.trim();
+                const coverInput = document.querySelector("#edit-cover").value.trim();
+                const systemInput = document.querySelector("#edit-system").value.trim();
+                const regionInput = document.querySelector("#edit-region").value.trim();
+                const yearInput = document.querySelector("#edit-year").value.trim();
+                const priceInput = document.querySelector("#edit-price").value.trim();
+                const conditionInput = document.querySelector("#edit-condition").value;
+
+                const index = state.collection.findIndex(g => g.id === state.viewingGame.game.id);
+                if (index !== -1) {
+                    state.collection[index] = {
+                    ...state.collection[index],
+                        title: titleInput || state.collection[index].title,
+                        coverImage: coverInput || state.collection[index].coverImage,
+                        system: systemInput || state.collection[index].system,
+                        region: regionInput || state.collection[index].region,
+                        year: yearInput,
+                        avgPrice: priceInput ? `$${priceInput}` : "",
+                        condition: conditionInput
+                };
+                state.viewingGame.game = state.collection[index];
+                persistState();
+            }
+
+            state.editing = false;
+            state.editDraft = null;
+            render();
+        });
+      }
+
+      const activeUser = getCurrentUserName();
+      if (activeUser) loadUserData(activeUser, () => { render(); });
+      else render();
+    </script>
+  </body>
+</html>
